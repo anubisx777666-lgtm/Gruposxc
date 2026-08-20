@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NENA 🌻 - Linktree</title>
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        /* Estilos generales */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+            color: white;
+            height: 100%;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* VIDEO DE FONDO LOCAL (1.mp4) - CORREGIDO */
+        .video-background {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            filter: brightness(0.5);
+            pointer-events: none;
+            object-fit: cover;
+        }
+
+        /* Contenedor del video para mejor control */
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .video-container video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: cover;
+        }
+
+        /* PORTADA +18 - Con imagen de fondo SIN blur */
+        #portada {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://i.ibb.co/NgmYkjjJ/IMG-20260430-195706-867.jpg') center/cover no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            transition: opacity 0.5s;
+        }
+
+        .overlay {
+            position: relative;
+            background: rgba(0, 0, 0, 0.55);
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            backdrop-filter: blur(3px);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+        }
+
+        .overlay h1 {
+            color: #fff;
+            font-size: 22px;
+            line-height: 1.5;
+        }
+
+        .overlay span {
+            display: block;
+            color: #00e0c0;
+            font-size: 26px;
+            font-weight: bold;
+            margin-top: 6px;
+        }
+
+        .btns {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
+            align-items: center;
+        }
+
+        button {
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            cursor: pointer;
+            width: 180px;
+            font-weight: bold;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .btn-trans {
+            background: transparent;
+            border: 1px solid #00e0c0;
+            color: #00e0c0;
+        }
+        .btn-trans:hover {
+            background: rgba(0, 224, 192, 0.1);
+        }
+
+        .btn-cyan {
+            background: #00e0c0;
+            color: #000;
+        }
+        .btn-cyan:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #00e0c0;
+        }
+
+        /* ANUNCIO FLOTANTE */
+        #floatingAd {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 1s;
+            border: 4px solid #0ea5bf;
+            box-shadow: 0 0 20px rgba(110, 255, 155, 0.6);
+        }
+
+        #floatingAd img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        #statusCircle {
+            position: absolute;
+            width: 13px;
+            height: 13px;
+            background: #28a745;
+            border: 3px solid white;
+            border-radius: 50%;
+            bottom: 0;
+            right: 0;
+        }
+
+        #messageCount {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 18px;
+            height: 18px;
+            background: #ff1a1a;
+            color: #fff;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* CONTENEDOR PRINCIPAL (Estilo Linktree con burbujas) */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px 100px 20px;
+            max-width: 400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Perfil */
+        .profile-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid white;
+            object-fit: cover;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-drag: none;
+            -webkit-touch-callout: none;
+        }
+
+        .profile-name {
+            margin-top: 10px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .verified-badge {
+            color: #1da1f2;
+            font-size: 1.2rem;
+            filter: drop-shadow(0 0 5px rgba(29, 161, 242, 0.8));
+        }
+
+        .profile-quote {
+            margin-top: 5px;
+            font-size: 0.65rem;
+            color: #9ca3af;
+            font-style: italic;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            max-width: 280px;
+            line-height: 1.3;
+            padding: 0 10px;
+        }
+
+        /* Botones del menú - Bien ovalados y compactos */
+        .group-btn {
+            display: flex;
+            align-items: center;
+            width: 90%;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            padding: 8px 20px;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: transform 0.2s, background-color 0.2s, border-color 0.2s;
+            box-sizing: border-box;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+
+        .group-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: scale(1.02);
+        }
+
+        /* Imágenes dentro de los botones */
+        .img-wrap {
+            position: relative;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .group-img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-drag: none;
+            -webkit-touch-callout: none;
+        }
+
+        .blur-img {
+            filter: blur(2px) brightness(0.7);
+        }
+
+        /* Candado animado flotante para imagen difuminada (Incest) */
+        .photo-lock {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 16px;
+            height: 16px;
+            animation: lockFloat 1.4s infinite ease-in-out;
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        @keyframes lockFloat {
+            0% { transform: translate(-50%, -50%) translateY(0); }
+            50% { transform: translate(-50%, -50%) translateY(-3px); }
+            100% { transform: translate(-50%, -50%) translateY(0); }
+        }
+
+        .group-info {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .group-name {
+            font-size: 13px;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Contadores de Vistas y Miembros */
+        .stats {
+            display: flex;
+            gap: 10px;
+            font-size: 11px;
+            color: #d1d5db;
+            margin-top: 2px;
+            white-space: nowrap;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .icon {
+            font-size: 10px;
+            color: #9ca3af;
+        }
+
+        /* EMOJIS ANIMADOS A LA DERECHA */
+        .emoji-side {
+            margin-left: auto;
+            font-size: 16px;
+            animation: float 1.5s infinite ease-in-out;
+            flex-shrink: 0;
+            user-select: none;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+            100% { transform: translateY(0); }
+        }
+
+        /* Candado de botón lateral (Exclusivo) */
+        .lock-side {
+            width: 18px;
+            height: 18px;
+            margin-left: auto;
+            flex-shrink: 0;
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .lock-side.shake {
+            animation: lockShake 0.35s;
+        }
+
+        @keyframes lockShake {
+            0% { transform: rotate(0); }
+            25% { transform: rotate(-15deg); }
+            50% { transform: rotate(15deg); }
+            75% { transform: rotate(-10deg); }
+            100% { transform: rotate(0); }
+        }
+
+        /* Primer botón destacado - Vibra solo cuando se activa */
+        @keyframes vibrarDosVeces {
+            0% { transform: translateX(0); }
+            10% { transform: translateX(-3px); }
+            20% { transform: translateX(3px); }
+            30% { transform: translateX(-3px); }
+            40% { transform: translateX(3px); }
+            50% { transform: translateX(0); }
+            100% { transform: translateX(0); }
+        }
+
+        .boton-destacado {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .boton-destacado.vibrar {
+            animation: vibrarDosVeces 1.5s ease-in-out 1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- VIDEO DE FONDO - CORREGIDO -->
+    <div class="video-container">
+        <video class="video-background" autoplay muted loop playsinline preload="auto">
+            <source src="./1.mp4" type="video/mp4">
+            <source src="1.mp4" type="video/mp4">
+            Tu navegador no soporta el video de fondo.
+        </video>
+    </div>
+
+    <!-- PORTADA +18 - Con imagen de fondo SIN blur -->
+    <div id="portada">
+        <div class="overlay">
+            <h1>Por favor confirme que tiene más de<br><span>18 años</span></h1>
+            <div class="btns">
+                <button class="btn-trans" onclick="window.close()">Salir</button>
+                <button class="btn-cyan" id="btn-si">Tengo +18</button>
+            </div>
+        </div>
+
+        <!-- ANUNCIO FLOTANTE EN LA PORTADA -->
+        <div id="floatingAd">
+            <img src="https://i.ibb.co/xqLPBhW7/2-1.jpg" draggable="false" oncontextmenu="return false;">
+            <div id="statusCircle"></div>
+            <div id="messageCount">2</div>
+        </div>
+    </div>
+
+    <!-- MENÚ PRINCIPAL (Estilo Burbujas) -->
+    <div class="container">
+        <div class="profile-container">
+            <img src="https://i.ibb.co/7fT4hk4/ed62041d0530e2419b408.jpg" alt="Foto Perfil" class="profile-img" draggable="false" oncontextmenu="return false;">
+            <div class="profile-name">
+                𝗠𝗲𝗻𝘂 𝘅𝘅𝘅
+                <i class="fas fa-check-circle verified-badge"></i>
+            </div>
+            <div class="profile-quote">💋 Era un ángel y tenía el infierno entre las piernas, razones más que suficiente para perder la cabeza por ella💋</div>
+        </div>
+
+        <div id="menuContainer"></div>
+    </div>
+
+    <script>
+        // Protección anti-descarga global
+        document.addEventListener('contextmenu', function(e) {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        document.addEventListener('dragstart', function(e) {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Verificar si el video está cargando
+        const video = document.querySelector('.video-background');
+        video.addEventListener('loadeddata', function() {
+            console.log('Video cargado correctamente');
+        });
+        
+        video.addEventListener('error', function(e) {
+            console.error('Error al cargar el video:', e);
+        });
+
+        // Lógica de la Portada
+        const portada = document.getElementById("portada");
+        document.getElementById("btn-si").onclick = () => {
+            portada.style.opacity = "0";
+            setTimeout(() => { 
+                portada.style.display = "none";
+                // Intentar reproducir el video después de quitar la portada
+                video.play().catch(e => console.log('Error al reproducir:', e));
+                
+                // Activar vibración del botón destacado
+                const botonDestacado = document.querySelector('.boton-destacado');
+                if (botonDestacado) {
+                    botonDestacado.classList.add('vibrar');
+                    setTimeout(() => {
+                        botonDestacado.classList.remove('vibrar');
+                    }, 1500);
+                }
+            }, 500);
+        };
+
+        // Lógica del Anuncio Flotante
+        const floatingAd = document.getElementById("floatingAd");
+        function fadeAd() {
+            floatingAd.style.opacity = "1";
+            setTimeout(() => { floatingAd.style.opacity = "0"; }, 4000);
+        }
+        fadeAd();
+        setInterval(fadeAd, 8000);
+        floatingAd.onclick = () => {
+            window.open("https://motorsnag.com/bp7js36xy?key=79dcf23b78ac56d88bf76dde83d3ae2f", "_blank");
+        };
+
+        // Lógica de Telegram WebApp
+        if (window.Telegram && Telegram.WebApp) {
+            Telegram.WebApp.ready();
+        }
+
+        // DATOS DE LOS GRUPOS
+        const groups = [
+            { name: "⛔SE PUEDE TODO XXX⛔", img: "https://i.ibb.co/DPT4nV87/IMG-20260716-124605-562.jpg", link: "https://kut.lat/XoXA", id: "todo", destacado: true },
+            { name: "😈🔥JOVENCITAS +18 🔥💖", img: "https://i.ibb.co/zTpf9bbx/3339387.png", link: "https://downyattainprojects.com/k6dgrqyc5g?key=a8ff3a3445842a223c56722310a7ef82", id: "jovencitas" },
+            { name: "🍒🔞PACKS FILTRADOS🔞🍒", img: "https://i.ibb.co/BVT8mnb3/fd0188494f83bf6142a907ab20f1758c.jpg", link: "https://link.mysophon.io/l/46u4nn", id: "packs" },
+            { name: "⩉Lɪɴᴋ Sᴘᴀᴍ Gʀᴜᴘᴏ🔞", img: "https://i.ibb.co/x45tnfV/14022826.png", link: "https://kut.lat/wmzm", id: "porn" },
+            { name: "COLEGI4L4S 👩‍🎓🔞", img: "https://i.ibb.co/3y81W95R/IMG-20260717-162224-808.jpg", link: "https://kut.lat/eEva", id: "colegialas" },
+            { name: "⩉Lɪɴᴋ Sᴘᴀᴍ Gʀᴜᴘᴏ🔞", img: "https://i.ibb.co/B5NrQCV6/6928929.png", link: "https://kut.lat/wmzm", id: "spam" },
+            { name: "INCEST 🎁", img: "https://i.ibb.co/zVgW7B3c/IMG-20251106-164202-134.jpg", link: "tg://resolve?domain=XGroupHelpBot&startapp=premium", id: "premium", isPremium: true },
+            { name: "Exclusivo 🔞🔥", img: "https://i.ibb.co/TxCKX5g2/IMG-20260716-123846-455.jpg", link: "https://kut.lat/erEd", id: "exclusive" }
+        ];
+
+        // EMOJIS PARA ASIGNAR ALEATORIAMENTE
+        const emojis = ["🍑","💋","😈","📸","⚡","👀","🤤","😏","🍓","🎁","🍭","💦","🎬","🙈","🔥","😍","🥵","😱","🌶️","💣","🍒","👅","💎","🔞","🎉","😜","💫"];
+        const shuffled = [...emojis].sort(() => 0.5 - Math.random());
+
+        // Lógica de los botones del menú
+        const menuContainer = document.getElementById("menuContainer");
+
+        // Formato de números (K)
+        function format(n) {
+            if (n >= 1000) {
+                return (n / 1000).toFixed(1) + "K";
+            }
+            return n;
+        }
+
+        // Sistema de contadores persistentes
+        function getStoredCounters() {
+            try {
+                const stored = localStorage.getItem('groupCounters');
+                if (stored) {
+                    return JSON.parse(stored);
+                }
+            } catch(e) {
+                console.log('Error al leer contadores:', e);
+            }
+            return null;
+        }
+
+        function saveCounters(data) {
+            try {
+                localStorage.setItem('groupCounters', JSON.stringify(data));
+            } catch(e) {
+                console.log('Error al guardar contadores:', e);
+            }
+        }
+
+        function getLastUpdate() {
+            try {
+                const stored = localStorage.getItem('lastCounterUpdate');
+                return stored ? parseInt(stored) : null;
+            } catch(e) {
+                return null;
+            }
+        }
+
+        function saveLastUpdate(timestamp) {
+            try {
+                localStorage.setItem('lastCounterUpdate', timestamp.toString());
+            } catch(e) {
+                console.log('Error al guardar fecha:', e);
+            }
+        }
+
+        function generateInitialCounters() {
+            const initialData = {};
+            
+            groups.forEach(g => {
+                const views = Math.floor(Math.random() * (50000 - 10000) + 10000);
+                const members = Math.floor(views * (0.6 + Math.random() * 0.3));
+                
+                initialData[g.id] = {
+                    views: views,
+                    members: members
+                };
+            });
+            
+            return initialData;
+        }
+
+        function incrementCounters(data) {
+            const now = Date.now();
+            const lastUpdate = getLastUpdate();
+            
+            if (!lastUpdate || (now - lastUpdate >= 3 * 60 * 60 * 1000)) {
+                groups.forEach(g => {
+                    if (data[g.id]) {
+                        const incrementViews = Math.floor(Math.random() * 900) + 100;
+                        const incrementMembers = Math.floor(Math.random() * 900) + 100;
+                        data[g.id].views += incrementViews;
+                        data[g.id].members += incrementMembers;
+                    }
+                });
+                saveLastUpdate(now);
+                saveCounters(data);
+            }
+            
+            return data;
+        }
+
+        function initCounters() {
+            let data = getStoredCounters();
+            
+            if (!data) {
+                data = generateInitialCounters();
+                saveCounters(data);
+                saveLastUpdate(Date.now());
+            } else {
+                data = incrementCounters(data);
+            }
+            
+            return data;
+        }
+
+        // Inicializar contadores primero
+        const counterData = initCounters();
+
+        // Crear botones después de tener los contadores
+        function createButtons() {
+            groups.forEach((g, i) => {
+                const btn = document.createElement("div");
+                btn.className = `group-btn ${g.destacado ? 'boton-destacado' : ''}`;
+                
+                if (g.link) {
+                    btn.onclick = () => {
+                        if (window.Telegram && Telegram.WebApp && g.link.startsWith("tg://")) {
+                            Telegram.WebApp.openTelegramLink(g.link);
+                        } else {
+                            window.open(g.link, "_blank");
+                        }
+                    };
+                } else {
+                    btn.onclick = () => {
+                        const lock = document.getElementById(`lock-${g.id}`);
+                        if(lock) {
+                            lock.classList.remove("shake");
+                            void lock.offsetWidth;
+                            lock.classList.add("shake");
+                        }
+                        alert("Este chat solo está disponible para miembros verificados.");
+                    };
+                }
+
+                const emoji = g.isPremium ? "⭐" : (shuffled[i % shuffled.length] || "🔥");
+                const views = counterData[g.id] ? counterData[g.id].views : 0;
+                const members = counterData[g.id] ? counterData[g.id].members : 0;
+
+                btn.innerHTML = `
+                    <div class="img-wrap">
+                        <img class="group-img ${g.isPremium ? 'blur-img' : ''}" src="${g.img}" alt="${g.name}" draggable="false" oncontextmenu="return false;">
+                        ${g.isPremium ? `<img class="photo-lock" src="https://cdn-icons-png.flaticon.com/512/565/565547.png" draggable="false" oncontextmenu="return false;">` : ''}
+                    </div>
+                    <div class="group-info">
+                        <div class="group-name">${g.name}</div>
+                        <div class="stats">
+                            <div class="stat">
+                                <i class="fas fa-eye icon"></i>
+                                <span>${format(views)}</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-user-plus icon"></i>
+                                <span>${format(members)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    ${g.id === "exclusive" 
+                        ? `<img src="https://cdn-icons-png.flaticon.com/512/565/565547.png" class="lock-side" id="lock-${g.id}" draggable="false" oncontextmenu="return false;">` 
+                        : `<span class="emoji-side">${emoji}</span>`
+                    }
+                `;
+                menuContainer.appendChild(btn);
+            });
+        }
+
+        // Crear los botones
+        createButtons();
+
+        // Asegurar que el video intente reproducirse
+        document.addEventListener('DOMContentLoaded', function() {
+            video.play().catch(e => console.log('El video necesita interacción del usuario'));
+        });
+    </script>
+</body>
+</html>
